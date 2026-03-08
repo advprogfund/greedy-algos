@@ -3,6 +3,22 @@
 #include <vector>
 #include <string>
 #include <bits/stdc++.h>
+#include <map>
+
+// Global Variables //
+std::unordered_map<int, int> cacheData;
+int capacity = 1;
+int numRequests = 0;
+
+enum evictionPolicy
+{
+    FIFO,
+    LRU,
+    OPTFF,
+    DEFAULT
+};
+enum evictionPolicy currentState = DEFAULT; // Default should just be used as FIFO while indicating it has not been manually set.
+// // // // // // //
 
 void ReadInputData(std::string fileSource)
 {
@@ -18,12 +34,8 @@ void ReadInputData(std::string fileSource)
     }
     else
     {
-
         std::string currLine;
-        int capacity = 0;
-        int numRequests = 0;
         bool isFirst = true;
-        std::vector<int> intVec;
 
         // Parse the data line-by-line, using the formatting specified in the description
         while (getline(source, currLine))
@@ -75,11 +87,29 @@ void ReadInputData(std::string fileSource)
                 // Keep adding to the list m times
                 for (int i = 0; i < numRequests; i++)
                 {
-                    int val;
-                    ss >> val;
+                    if (i < capacity)
+                    {
+                        // Do nothing
+                    }
+                    else
+                    {
+                        // Must perform an eviction to add the item
+                        switch (currentState)
+                        {
+                            case DEFAULT:
+                            case FIFO:
+                                break;
+                            case LRU:
+                                break;
+                            case OPTFF:
+                                break;
+                        }
+                    }
+                        int val;
+                        ss >> val;
 
-                    std::cout << "Int: " << val << std::endl;
-                    intVec.push_back(val);
+                        std::cout << "Int: " << val << std::endl;
+                        cacheData.insert({i, val});
                 }
             }
         }
