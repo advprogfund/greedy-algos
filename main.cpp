@@ -4,11 +4,14 @@
 #include <string>
 #include <bits/stdc++.h>
 #include <map>
+#include <chrono>
 
 // Global Variables //
-std::unordered_map<int, int> cacheData;
+//std::unordered_map<int, int> cacheData;
+std::unordered_map<int, unsigned int> cacheData;    // Store integer IDs as keys and track time with unsigned int
 int capacity = 1;
 int numRequests = 0;
+const auto startTime = std::chrono::steady_clock::now();
 
 enum evictionPolicy
 {
@@ -87,29 +90,45 @@ void ReadInputData(std::string fileSource)
                 // Keep adding to the list m times
                 for (int i = 0; i < numRequests; i++)
                 {
-                    if (i < capacity)
+                    int val;
+                    ss >> val;
+
+                    // Check if the ID is not present in the unordered map cache already.
+                    if (cacheData.find(val) == cacheData.end())
                     {
-                        // Do nothing
+                        if (i < capacity)
+                        {
+                            // Do nothing
+                        }
+                        else
+                        {
+                            // Must perform an eviction to add the item
+                            switch (currentState)
+                            {
+                                case DEFAULT:
+                                case FIFO:
+                                    break;
+                                case LRU:
+                                    break;
+                                case OPTFF:
+                                    break;
+                            }
+                        }
+
+                        // Citation for converting chrono time to int:
+                        // https://stackoverflow.com/questions/70421335/how-do-i-convert-stdchrono-to-int
+                        // https://cplusplus.com/reference/chrono/duration_cast/
+                        auto emplacementTime = std::chrono::steady_clock::now();
+
+                        auto durationTime = std::chrono::duration_cast<std::chrono::seconds> (emplacementTime - startTime);
+
+                        std::cout << "Int: " << val << "   Time: " << durationTime.count() << std::endl;
+                        cacheData.insert({val, durationTime.count()});
                     }
                     else
                     {
-                        // Must perform an eviction to add the item
-                        switch (currentState)
-                        {
-                            case DEFAULT:
-                            case FIFO:
-                                break;
-                            case LRU:
-                                break;
-                            case OPTFF:
-                                break;
-                        }
+                        // The data is already present
                     }
-                        int val;
-                        ss >> val;
-
-                        std::cout << "Int: " << val << std::endl;
-                        cacheData.insert({i, val});
                 }
             }
         }
@@ -123,7 +142,8 @@ void ReadInputData(std::string fileSource)
 
 int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+    // Time calculation using Chrono citation: https://www.geeksforgeeks.org/cpp/measure-execution-time-function-cpp/
+    // Start tracking time as the program begins using chrono.
 
     ReadInputData("example.in");
 
